@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medellín Weather & News ☀️</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Medellín</h1>
+            <p class="subtitle">Weather & Local News</p>
+        </header>
+
+        <main>
+            <!-- Weather Section -->
+            <section class="weather-card" id="weather">
+                <div class="loading">Loading weather...</div>
+            </section>
+
+            <!-- Forecast Section -->
+            <section class="forecast-section">
+                <h2>📅 5-Day Forecast</h2>
+                <div class="forecast-grid" id="forecast">
+                    <div class="loading">Loading forecast...</div>
+                </div>
+            </section>
+
+            <!-- News Section -->
+            <section class="news-section">
+                <h2>📰 Local News</h2>
+                <div class="news-grid" id="news">
+                    <div class="loading">Loading news...</div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Built with ☢️ by <a href="https://github.com/santiagorueda-lab" target="_blank">VaultGhost</a></p>
+            <p class="update-time" id="update-time"></p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
