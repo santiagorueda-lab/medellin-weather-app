@@ -2,87 +2,61 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Medellín Weather</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="weather-clear">
+<body>
     <!-- Dynamic Background -->
-    <div class="weather-bg">
-        <div class="weather-bg-gradient"></div>
-        <div class="weather-particles" id="particles"></div>
+    <div class="weather-bg" id="weather-bg">
+        <div class="bg-overlay"></div>
+        <div class="rain-container" id="rain-container"></div>
+        <div class="clouds" id="clouds"></div>
     </div>
 
-    <div class="container">
-        <!-- Main Weather Card -->
-        <section class="main-card glass" id="weather">
-            <div class="location">
-                <span class="location-icon">📍</span>
-                <span class="location-name">Medellín</span>
-            </div>
-            <div class="temp-display">
-                <span class="temp-value" id="temp">--</span>
-                <span class="temp-unit">°</span>
-            </div>
-            <div class="weather-condition" id="condition">Loading...</div>
-            <div class="temp-range">
-                <span class="temp-high">H: <span id="high">--</span>°</span>
-                <span class="temp-low">L: <span id="low">--</span>°</span>
-            </div>
-        </section>
+    <div class="app">
+        <!-- Main Header -->
+        <header class="main-header" id="main-header">
+            <h1 class="city-name">Medellín</h1>
+            <div class="temp-main" id="temp-main">--°</div>
+            <div class="condition" id="condition">Loading</div>
+            <div class="temp-range" id="temp-range">H:--° L:--°</div>
+        </header>
 
-        <!-- Hourly Forecast (simplified as current details) -->
-        <section class="details-card glass">
-            <div class="details-grid">
-                <div class="detail-item">
-                    <span class="detail-icon">🌡️</span>
-                    <span class="detail-label">Feels Like</span>
-                    <span class="detail-value" id="feels-like">--°</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-icon">💧</span>
-                    <span class="detail-label">Humidity</span>
-                    <span class="detail-value" id="humidity">--%</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-icon">💨</span>
-                    <span class="detail-label">Wind</span>
-                    <span class="detail-value" id="wind">-- km/h</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-icon">☀️</span>
-                    <span class="detail-label">UV Index</span>
-                    <span class="detail-value" id="uv">Low</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5-Day Forecast -->
-        <section class="forecast-card glass">
-            <div class="card-header">
-                <span class="header-icon">📅</span>
-                <span class="header-title">5-DAY FORECAST</span>
-            </div>
-            <div class="forecast-list" id="forecast">
+        <!-- Hourly Forecast Card -->
+        <section class="card hourly-card">
+            <p class="hourly-summary" id="hourly-summary">Loading weather data...</p>
+            <div class="hourly-scroll" id="hourly-scroll">
                 <!-- Filled by JS -->
             </div>
         </section>
 
-        <!-- News Section -->
-        <section class="news-card glass">
-            <div class="card-header">
-                <span class="header-icon">📰</span>
-                <span class="header-title">MEDELLÍN NEWS</span>
+        <!-- 10-Day Forecast Card -->
+        <section class="card forecast-card">
+            <div class="card-title">
+                <span class="card-icon">📅</span>
+                <span>10-DAY FORECAST</span>
             </div>
-            <div class="news-list" id="news">
+            <div class="forecast-list" id="forecast-list">
                 <!-- Filled by JS -->
             </div>
         </section>
 
-        <footer class="footer glass-subtle">
-            <p>Weather data from Open-Meteo · Built by <a href="https://github.com/santiagorueda-lab">VaultGhost</a> ☢️</p>
+        <!-- News Card -->
+        <section class="card news-card">
+            <div class="card-title">
+                <span class="card-icon">📰</span>
+                <span>MEDELLÍN NEWS</span>
+            </div>
+            <div class="news-list" id="news-list">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Open-Meteo · <a href="https://github.com/santiagorueda-lab">VaultGhost</a> ☢️</p>
         </footer>
     </div>
 
