@@ -1,4 +1,4 @@
-// Apple Weather Clone - VaultGhost ☢️
+// Apple Weather Clone - Desktop + Mobile - VaultGhost ☢️
 
 const MEDELLIN_LAT = 6.2442;
 const MEDELLIN_LON = -75.5812;
@@ -32,18 +32,14 @@ const weatherTypes = {
     95: 'rainy', 96: 'rainy', 99: 'rainy'
 };
 
-// Check if night (6PM - 6AM Bogota time)
 function isNight() {
-    const now = new Date();
-    const hour = (now.getUTCHours() - 5 + 24) % 24;
+    const hour = (new Date().getUTCHours() - 5 + 24) % 24;
     return hour >= 18 || hour < 6;
 }
 
-// Create rain effect
 function createRain(intensity = 50) {
     const container = document.getElementById('rain-container');
     container.innerHTML = '';
-    
     for (let i = 0; i < intensity; i++) {
         const drop = document.createElement('div');
         drop.className = 'raindrop';
@@ -55,58 +51,40 @@ function createRain(intensity = 50) {
     }
 }
 
-// Create clouds
 function createClouds() {
     const container = document.getElementById('clouds');
     container.innerHTML = '';
-    
-    const cloudData = [
-        { w: 200, h: 80, x: '10%', y: '5%' },
-        { w: 300, h: 100, x: '50%', y: '2%' },
-        { w: 250, h: 90, x: '80%', y: '8%' },
-        { w: 180, h: 70, x: '30%', y: '15%' },
-        { w: 220, h: 80, x: '70%', y: '12%' },
+    const clouds = [
+        { w: 250, h: 100, x: '5%', y: '3%' },
+        { w: 350, h: 120, x: '40%', y: '0%' },
+        { w: 300, h: 100, x: '75%', y: '5%' },
+        { w: 200, h: 80, x: '20%', y: '12%' },
+        { w: 280, h: 90, x: '60%', y: '10%' },
     ];
-    
-    cloudData.forEach(c => {
-        const cloud = document.createElement('div');
-        cloud.className = 'cloud';
-        cloud.style.width = `${c.w}px`;
-        cloud.style.height = `${c.h}px`;
-        cloud.style.left = c.x;
-        cloud.style.top = c.y;
-        container.appendChild(cloud);
+    clouds.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'cloud';
+        el.style.cssText = `width:${c.w}px;height:${c.h}px;left:${c.x};top:${c.y}`;
+        container.appendChild(el);
     });
 }
 
-// Set background based on weather
-function setBackground(weatherCode) {
+function setBackground(code) {
     const bg = document.getElementById('weather-bg');
-    const type = weatherTypes[weatherCode] || 'cloudy';
-    
+    const type = weatherTypes[code] || 'cloudy';
     bg.classList.remove('sunny', 'rainy', 'cloudy', 'night');
+    bg.classList.add(isNight() ? 'night' : type);
     
-    if (isNight()) {
-        bg.classList.add('night');
-    } else {
-        bg.classList.add(type);
-    }
-    
-    // Rain effect
-    const rainContainer = document.getElementById('rain-container');
     if (type === 'rainy') {
-        createRain(weatherCode >= 63 ? 80 : 40);
+        createRain(code >= 63 ? 80 : 45);
     } else {
-        rainContainer.innerHTML = '';
+        document.getElementById('rain-container').innerHTML = '';
     }
-    
     createClouds();
 }
 
-// Fetch weather with hourly data
 async function fetchWeather() {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${MEDELLIN_LAT}&longitude=${MEDELLIN_LON}&current=temperature_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=America/Bogota&forecast_days=10`;
-    
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${MEDELLIN_LAT}&longitude=${MEDELLIN_LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure&hourly=temperature_2m,weather_code,precipitation_probability,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max&timezone=America/Bogota&forecast_days=10`;
     try {
         const res = await fetch(url);
         return await res.json();
@@ -116,7 +94,6 @@ async function fetchWeather() {
     }
 }
 
-// Fetch news
 async function fetchNews() {
     try {
         const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.elcolombiano.com/rss/medellin.xml');
@@ -129,9 +106,7 @@ async function fetchNews() {
                 source: 'El Colombiano'
             }));
         }
-    } catch (e) {
-        console.error('News error:', e);
-    }
+    } catch (e) { console.error('News error:', e); }
     return [];
 }
 
@@ -142,177 +117,159 @@ function timeAgo(date) {
     return `${Math.floor(mins / 1440)}d ago`;
 }
 
-// Render main header
-function renderHeader(data) {
-    if (!data?.current) return;
-    
-    const temp = Math.round(data.current.temperature_2m);
-    const code = data.current.weather_code;
-    const high = Math.round(data.daily.temperature_2m_max[0]);
-    const low = Math.round(data.daily.temperature_2m_min[0]);
-    
-    document.getElementById('temp-main').textContent = `${temp}°`;
-    document.getElementById('condition').textContent = weatherConditions[code] || 'Cloudy';
-    document.getElementById('temp-range').textContent = `H:${high}° L:${low}°`;
-    
-    setBackground(code);
+function formatTime(date) {
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, '0')}${ampm}`;
 }
 
-// Render hourly forecast
+function renderHeader(data) {
+    if (!data?.current) return;
+    const { temperature_2m, weather_code } = data.current;
+    const { temperature_2m_max, temperature_2m_min } = data.daily;
+    
+    document.getElementById('temp-main').textContent = `${Math.round(temperature_2m)}°`;
+    document.getElementById('condition').textContent = weatherConditions[weather_code] || 'Cloudy';
+    document.getElementById('temp-range').textContent = `H:${Math.round(temperature_2m_max[0])}° L:${Math.round(temperature_2m_min[0])}°`;
+    setBackground(weather_code);
+}
+
 function renderHourly(data) {
     if (!data?.hourly) return;
-    
+    const { time, temperature_2m, weather_code, precipitation_probability } = data.hourly;
     const now = new Date();
-    const currentHour = now.getHours();
-    const hourly = data.hourly;
+    let startIdx = time.findIndex(t => new Date(t) >= now);
+    if (startIdx < 0) startIdx = 0;
     
-    // Find current hour index
-    let startIdx = 0;
-    for (let i = 0; i < hourly.time.length; i++) {
-        const h = new Date(hourly.time[i]).getHours();
-        if (new Date(hourly.time[i]) >= now) {
-            startIdx = i;
-            break;
-        }
-    }
-    
-    // Get sunset time
     const sunset = new Date(data.daily.sunset[0]);
-    const sunsetHour = sunset.getHours();
-    const sunsetMin = sunset.getMinutes();
-    
-    // Summary
-    const nextCode = hourly.weather_code[startIdx + 2] || hourly.weather_code[startIdx];
     const wind = Math.round(data.current.wind_speed_10m);
-    const condition = weatherConditions[nextCode] || 'Cloudy';
-    document.getElementById('hourly-summary').textContent = 
-        `${condition} conditions expected. Wind gusts are up to ${wind} km/h.`;
+    const nextCode = weather_code[startIdx + 2] || weather_code[startIdx];
     
-    // Hourly items
+    document.getElementById('hourly-summary').textContent = 
+        `${weatherConditions[nextCode] || 'Cloudy'} conditions expected. Wind gusts are up to ${wind} km/h.`;
+    
     let html = '';
-    for (let i = 0; i < 8; i++) {
+    let sunsetShown = false;
+    
+    for (let i = 0; i < 12; i++) {
         const idx = startIdx + i;
-        if (idx >= hourly.time.length) break;
+        if (idx >= time.length) break;
         
-        const time = new Date(hourly.time[idx]);
-        const hour = time.getHours();
-        const temp = Math.round(hourly.temperature_2m[idx]);
-        const icon = weatherIcons[hourly.weather_code[idx]] || '☁️';
-        const rain = hourly.precipitation_probability[idx];
+        const t = new Date(time[idx]);
+        const hour = t.getHours();
+        const temp = Math.round(temperature_2m[idx]);
+        const icon = weatherIcons[weather_code[idx]] || '☁️';
+        const rain = precipitation_probability[idx];
         
-        // Check if this is sunset hour
-        const isSunset = hour === sunsetHour && i > 0;
-        
-        let timeStr = i === 0 ? 'Now' : `${hour > 12 ? hour - 12 : hour || 12}${hour >= 12 ? 'PM' : 'AM'}`;
-        
-        if (isSunset) {
-            html += `
-                <div class="hourly-item">
-                    <div class="hourly-time">${sunsetHour > 12 ? sunsetHour - 12 : sunsetHour}:${String(sunsetMin).padStart(2, '0')}PM</div>
-                    <div class="hourly-icon">🌅</div>
-                    <div class="hourly-rain"></div>
-                    <div class="hourly-temp">Sunset</div>
-                </div>
-            `;
+        // Insert sunset
+        if (!sunsetShown && t > sunset) {
+            sunsetShown = true;
+            html += `<div class="hourly-item"><div class="hourly-time">${formatTime(sunset)}</div><div class="hourly-icon">🌅</div><div class="hourly-rain"></div><div class="hourly-temp">Sunset</div></div>`;
         }
         
-        html += `
-            <div class="hourly-item">
-                <div class="hourly-time">${timeStr}</div>
-                <div class="hourly-icon">${icon}</div>
-                <div class="hourly-rain">${rain > 0 ? rain + '%' : ''}</div>
-                <div class="hourly-temp">${temp}°</div>
-            </div>
-        `;
+        const timeStr = i === 0 ? 'Now' : `${hour % 12 || 12}${hour >= 12 ? 'PM' : 'AM'}`;
+        html += `<div class="hourly-item"><div class="hourly-time">${timeStr}</div><div class="hourly-icon">${icon}</div><div class="hourly-rain">${rain > 0 ? rain + '%' : ''}</div><div class="hourly-temp">${temp}°</div></div>`;
     }
     
     document.getElementById('hourly-scroll').innerHTML = html;
 }
 
-// Render 10-day forecast
 function renderForecast(data) {
     if (!data?.daily) return;
-    
-    const daily = data.daily;
+    const { time, weather_code, temperature_2m_max, temperature_2m_min, precipitation_probability_max } = data.daily;
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     
-    // Get temp range for bars
-    const allLows = daily.temperature_2m_min;
-    const allHighs = daily.temperature_2m_max;
-    const minTemp = Math.min(...allLows);
-    const maxTemp = Math.max(...allHighs);
-    const range = maxTemp - minTemp;
-    
-    // Current temp for dot position
+    const minT = Math.min(...temperature_2m_min);
+    const maxT = Math.max(...temperature_2m_max);
+    const range = maxT - minT;
     const currentTemp = data.current.temperature_2m;
     
     let html = '';
-    for (let i = 0; i < Math.min(daily.time.length, 10); i++) {
-        const date = new Date(daily.time[i]);
-        const dayName = i === 0 ? 'Today' : days[date.getDay()];
-        const icon = weatherIcons[daily.weather_code[i]] || '☁️';
-        const low = Math.round(daily.temperature_2m_min[i]);
-        const high = Math.round(daily.temperature_2m_max[i]);
-        const rain = daily.precipitation_probability_max[i];
+    for (let i = 0; i < Math.min(time.length, 10); i++) {
+        const d = new Date(time[i]);
+        const day = i === 0 ? 'Today' : days[d.getDay()];
+        const icon = weatherIcons[weather_code[i]] || '☁️';
+        const low = Math.round(temperature_2m_min[i]);
+        const high = Math.round(temperature_2m_max[i]);
+        const rain = precipitation_probability_max[i];
         
-        // Bar calculations
-        const lowPos = ((low - minTemp) / range) * 100;
-        const highPos = ((high - minTemp) / range) * 100;
-        const barWidth = highPos - lowPos;
+        const lowPos = ((low - minT) / range) * 100;
+        const highPos = ((high - minT) / range) * 100;
+        const width = highPos - lowPos;
         
-        // Dot position (only for today)
-        let dotHtml = '';
+        let dot = '';
         if (i === 0) {
-            const dotPos = ((currentTemp - minTemp) / range) * 100;
-            const dotRelative = ((dotPos - lowPos) / barWidth) * 100;
-            dotHtml = `<div class="forecast-bar-dot" style="left: ${Math.min(Math.max(dotRelative, 0), 100)}%"></div>`;
+            const dotPos = Math.min(Math.max(((currentTemp - minT) / range) * 100, lowPos), highPos);
+            const rel = ((dotPos - lowPos) / width) * 100;
+            dot = `<div class="forecast-bar-dot" style="left:${rel}%"></div>`;
         }
         
-        html += `
-            <div class="forecast-row">
-                <div class="forecast-day">${dayName}</div>
-                <div class="forecast-icon-wrap">
-                    <div class="forecast-icon">${icon}</div>
-                    ${rain > 20 ? `<div class="forecast-rain">${rain}%</div>` : '<div class="forecast-rain"></div>'}
-                </div>
-                <div class="forecast-low">${low}°</div>
-                <div class="forecast-bar">
-                    <div class="forecast-bar-fill" style="left: ${lowPos}%; width: ${barWidth}%">
-                        ${dotHtml}
-                    </div>
-                </div>
-                <div class="forecast-high">${high}°</div>
-            </div>
-        `;
+        html += `<div class="forecast-row"><div class="forecast-day">${day}</div><div class="forecast-icon-wrap"><div class="forecast-icon">${icon}</div>${rain > 20 ? `<div class="forecast-rain">${rain}%</div>` : '<div class="forecast-rain"></div>'}</div><div class="forecast-low">${low}°</div><div class="forecast-bar"><div class="forecast-bar-fill" style="left:${lowPos}%;width:${width}%">${dot}</div></div><div class="forecast-high">${high}°</div></div>`;
     }
     
     document.getElementById('forecast-list').innerHTML = html;
 }
 
-// Render news
-function renderNews(news) {
-    if (!news.length) {
-        document.getElementById('news-list').innerHTML = '<div class="loading">No news available</div>';
-        return;
-    }
+function renderDetails(data) {
+    if (!data?.current || !data?.daily) return;
     
-    let html = '';
-    news.forEach(item => {
-        html += `
-            <div class="news-item">
-                <a href="${item.link}" target="_blank" rel="noopener">
-                    <div class="news-source">${item.source}</div>
-                    <div class="news-title">${item.title}</div>
-                    <div class="news-time">${item.time}</div>
-                </a>
-            </div>
-        `;
-    });
+    const { apparent_temperature, relative_humidity_2m, wind_speed_10m, surface_pressure } = data.current;
+    const { sunrise, sunset, uv_index_max } = data.daily;
+    const dewPoint = data.hourly?.dew_point_2m?.[0] || '--';
     
-    document.getElementById('news-list').innerHTML = html;
+    // UV
+    const uv = Math.round(uv_index_max[0]);
+    const uvLabels = ['Low', 'Low', 'Low', 'Moderate', 'Moderate', 'Moderate', 'High', 'High', 'Very High', 'Very High', 'Very High', 'Extreme'];
+    const uvDescs = ['No protection needed.', 'No protection needed.', 'No protection needed.', 'Use sun protection.', 'Use sun protection.', 'Use sun protection.', 'Protection essential.', 'Protection essential.', 'Extra protection needed.', 'Extra protection needed.', 'Extra protection needed.', 'Avoid sun exposure.'];
+    
+    document.getElementById('uv-value').textContent = uv;
+    document.getElementById('uv-label').textContent = uvLabels[Math.min(uv, 11)];
+    document.getElementById('uv-desc').textContent = uvDescs[Math.min(uv, 11)];
+    document.getElementById('uv-dot').style.left = `${Math.min(uv / 11 * 100, 100)}%`;
+    
+    // Sunset
+    const sunsetDate = new Date(sunset[0]);
+    const sunriseDate = new Date(sunrise[0]);
+    document.getElementById('sunset-time').textContent = formatTime(sunsetDate);
+    document.getElementById('sunrise-time').textContent = `Sunrise: ${formatTime(sunriseDate)}`;
+    
+    // Sun position (simplified)
+    const now = new Date();
+    const dayLength = sunsetDate - sunriseDate;
+    const elapsed = now - sunriseDate;
+    const sunPos = Math.min(Math.max(elapsed / dayLength, 0), 1);
+    const angle = sunPos * 180;
+    const sunDot = document.getElementById('sun-dot');
+    const radius = 40;
+    sunDot.style.left = `calc(10% + ${sunPos * 80}%)`;
+    sunDot.style.bottom = `${Math.sin(angle * Math.PI / 180) * 45}px`;
+    
+    // Wind
+    document.getElementById('wind-speed').textContent = Math.round(wind_speed_10m);
+    
+    // Feels Like
+    const feels = Math.round(apparent_temperature);
+    const actual = Math.round(data.current.temperature_2m);
+    document.getElementById('feels-value').textContent = `${feels}°`;
+    document.getElementById('feels-desc').textContent = feels === actual ? 'Similar to the actual temperature.' : feels > actual ? 'Humidity is making it feel warmer.' : 'Wind is making it feel cooler.';
+    
+    // Humidity
+    document.getElementById('humidity-value').textContent = `${relative_humidity_2m}%`;
+    document.getElementById('humidity-desc').textContent = `The dew point is ${Math.round(dewPoint)}° right now.`;
+    
+    // Pressure
+    document.getElementById('pressure-value').textContent = Math.round(surface_pressure);
 }
 
-// Init
+function renderNews(news) {
+    const html = news.length ? news.map(n => `<div class="news-item"><a href="${n.link}" target="_blank" rel="noopener"><div class="news-source">${n.source}</div><div class="news-title">${n.title}</div><div class="news-time">${n.time}</div></a></div>`).join('') : '<div class="news-item"><p>No news available</p></div>';
+    
+    document.getElementById('news-list-desktop').innerHTML = html;
+    document.getElementById('news-list-mobile').innerHTML = html;
+}
+
 async function init() {
     const [weather, news] = await Promise.all([fetchWeather(), fetchNews()]);
     
@@ -320,17 +277,17 @@ async function init() {
         renderHeader(weather);
         renderHourly(weather);
         renderForecast(weather);
+        renderDetails(weather);
     }
-    
     renderNews(news);
     
-    // Refresh every 10 min
     setInterval(async () => {
         const w = await fetchWeather();
         if (w) {
             renderHeader(w);
             renderHourly(w);
             renderForecast(w);
+            renderDetails(w);
         }
     }, 600000);
 }

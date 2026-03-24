@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Medellín Weather</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -25,41 +25,107 @@
             <div class="temp-range" id="temp-range">H:--° L:--°</div>
         </header>
 
-        <!-- Hourly Forecast Card -->
-        <section class="card hourly-card">
-            <p class="hourly-summary" id="hourly-summary">Loading weather data...</p>
-            <div class="hourly-scroll" id="hourly-scroll">
-                <!-- Filled by JS -->
-            </div>
-        </section>
+        <!-- Desktop Grid / Mobile Stack -->
+        <div class="weather-grid">
+            <!-- Left Column -->
+            <div class="grid-left">
+                <!-- Hourly Forecast Card -->
+                <section class="card hourly-card">
+                    <p class="hourly-summary" id="hourly-summary">Loading weather data...</p>
+                    <div class="hourly-scroll" id="hourly-scroll"></div>
+                </section>
 
-        <!-- 10-Day Forecast Card -->
-        <section class="card forecast-card">
-            <div class="card-title">
-                <span class="card-icon">📅</span>
-                <span>10-DAY FORECAST</span>
+                <!-- 10-Day Forecast Card -->
+                <section class="card forecast-card">
+                    <div class="card-title">
+                        <span class="card-icon">📅</span>
+                        <span>10-DAY FORECAST</span>
+                    </div>
+                    <div class="forecast-list" id="forecast-list"></div>
+                </section>
             </div>
-            <div class="forecast-list" id="forecast-list">
-                <!-- Filled by JS -->
-            </div>
-        </section>
 
-        <!-- News Card -->
-        <section class="card news-card">
+            <!-- Right Column - Bento Grid -->
+            <div class="grid-right">
+                <!-- Row 1: UV + Sunset -->
+                <div class="bento-row">
+                    <section class="card mini-card uv-card">
+                        <div class="card-title"><span class="card-icon">☀️</span><span>UV INDEX</span></div>
+                        <div class="mini-value" id="uv-value">--</div>
+                        <div class="mini-label" id="uv-label">--</div>
+                        <div class="uv-bar"><div class="uv-bar-fill" id="uv-bar-fill"></div><div class="uv-dot" id="uv-dot"></div></div>
+                        <div class="mini-desc" id="uv-desc">Loading...</div>
+                    </section>
+                    <section class="card mini-card sunset-card">
+                        <div class="card-title"><span class="card-icon">🌅</span><span>SUNSET</span></div>
+                        <div class="mini-value" id="sunset-time">--:--</div>
+                        <div class="sunset-arc"><div class="sun-dot" id="sun-dot"></div></div>
+                        <div class="mini-desc" id="sunrise-time">Sunrise: --:--</div>
+                    </section>
+                </div>
+
+                <!-- Row 2: Wind + Feels Like -->
+                <div class="bento-row">
+                    <section class="card mini-card wind-card">
+                        <div class="card-title"><span class="card-icon">💨</span><span>WIND</span></div>
+                        <div class="wind-compass">
+                            <div class="compass-ring">
+                                <span class="compass-n">N</span>
+                                <span class="compass-e">E</span>
+                                <span class="compass-s">S</span>
+                                <span class="compass-w">W</span>
+                            </div>
+                            <div class="wind-speed" id="wind-speed">--</div>
+                            <div class="wind-unit">km/h</div>
+                        </div>
+                    </section>
+                    <section class="card mini-card feels-card">
+                        <div class="card-title"><span class="card-icon">🌡️</span><span>FEELS LIKE</span></div>
+                        <div class="mini-value" id="feels-value">--°</div>
+                        <div class="mini-desc" id="feels-desc">Similar to the actual temperature.</div>
+                    </section>
+                </div>
+
+                <!-- Row 3: Humidity + Visibility -->
+                <div class="bento-row">
+                    <section class="card mini-card humidity-card">
+                        <div class="card-title"><span class="card-icon">💧</span><span>HUMIDITY</span></div>
+                        <div class="mini-value" id="humidity-value">--%</div>
+                        <div class="mini-desc" id="humidity-desc">The dew point is --° right now.</div>
+                    </section>
+                    <section class="card mini-card pressure-card">
+                        <div class="card-title"><span class="card-icon">⏱️</span><span>PRESSURE</span></div>
+                        <div class="mini-value" id="pressure-value">--</div>
+                        <div class="mini-label">hPa</div>
+                    </section>
+                </div>
+
+                <!-- News Card (Desktop) -->
+                <section class="card news-card desktop-news">
+                    <div class="card-title">
+                        <span class="card-icon">📰</span>
+                        <span>MEDELLÍN NEWS</span>
+                    </div>
+                    <div class="news-list" id="news-list-desktop"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- News Card (Mobile only) -->
+        <section class="card news-card mobile-news">
             <div class="card-title">
                 <span class="card-icon">📰</span>
                 <span>MEDELLÍN NEWS</span>
             </div>
-            <div class="news-list" id="news-list">
-                <!-- Filled by JS -->
-            </div>
+            <div class="news-list" id="news-list-mobile"></div>
         </section>
 
         <footer class="footer">
-            <p>Open-Meteo · <a href="https://github.com/santiagorueda-lab">VaultGhost</a> ☢️</p>
+            <p>Weather for Medellín, Antioquia, Colombia</p>
+            <p class="footer-credit">Open-Meteo · <a href="https://github.com/santiagorueda-lab">VaultGhost</a> ☢️</p>
         </footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
