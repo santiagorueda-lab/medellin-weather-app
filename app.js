@@ -97,18 +97,31 @@ function createClouds() {
     });
 }
 
-function setBackground(code, tz) {
-    const bg = document.getElementById('weather-bg');
+function setBackground(code, tz, cityKey) {
+    const overlay = document.getElementById('weather-overlay');
     const type = weatherTypes[code] || 'cloudy';
-    bg.classList.remove('sunny', 'rainy', 'cloudy', 'night');
-    bg.classList.add(isNight(tz) ? 'night' : type);
     
+    // Update weather overlay
+    overlay.classList.remove('sunny', 'rainy', 'cloudy', 'night');
+    overlay.classList.add(isNight(tz) ? 'night' : type);
+    
+    // Switch city background
+    document.querySelectorAll('.city-bg').forEach(bg => bg.classList.remove('active'));
+    document.getElementById(`bg-${cityKey}`).classList.add('active');
+    
+    // Rain effect
     if (type === 'rainy') {
         createRain(code >= 63 ? 80 : 45);
     } else {
         document.getElementById('rain-container').innerHTML = '';
     }
-    createClouds();
+    
+    // Clouds for cloudy/rainy weather
+    if (type === 'cloudy' || type === 'rainy') {
+        createClouds();
+    } else {
+        document.getElementById('clouds').innerHTML = '';
+    }
 }
 
 async function fetchWeather(cityKey) {
@@ -174,7 +187,7 @@ function renderHeader(data, cityKey) {
     document.getElementById('temp-range').textContent = `H:${Math.round(temperature_2m_max[0])}° L:${Math.round(temperature_2m_min[0])}°`;
     document.getElementById('footer-location').textContent = `Weather for ${city.name}, ${city.country}`;
     
-    setBackground(weather_code, city.tz);
+    setBackground(weather_code, city.tz, cityKey);
 }
 
 function renderHourly(data, cityKey) {
