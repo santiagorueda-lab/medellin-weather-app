@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Medellín Weather</title>
-    <link rel="stylesheet" href="styles.css?v=3">
+    <title>Weather</title>
+    <link rel="stylesheet" href="styles.css?v=4">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -17,9 +17,25 @@
     </div>
 
     <div class="app">
+        <!-- City Tabs -->
+        <nav class="city-tabs" id="city-tabs">
+            <button class="city-tab active" data-city="medellin">
+                <span class="tab-name">Medellín</span>
+                <span class="tab-temp" id="tab-temp-medellin">--°</span>
+            </button>
+            <button class="city-tab" data-city="barcelona">
+                <span class="tab-name">Barcelona</span>
+                <span class="tab-temp" id="tab-temp-barcelona">--°</span>
+            </button>
+            <button class="city-tab" data-city="newyork">
+                <span class="tab-name">New York</span>
+                <span class="tab-temp" id="tab-temp-newyork">--°</span>
+            </button>
+        </nav>
+
         <!-- Main Header -->
         <header class="main-header" id="main-header">
-            <h1 class="city-name">Medellín</h1>
+            <h1 class="city-name" id="city-name">Medellín</h1>
             <div class="temp-main" id="temp-main">--°</div>
             <div class="condition" id="condition">Loading</div>
             <div class="temp-range" id="temp-range">H:--° L:--°</div>
@@ -86,7 +102,7 @@
                     </section>
                 </div>
 
-                <!-- Row 3: Humidity + Visibility -->
+                <!-- Row 3: Humidity + Pressure -->
                 <div class="bento-row">
                     <section class="card mini-card humidity-card">
                         <div class="card-title"><span class="card-icon">💧</span><span>HUMIDITY</span></div>
@@ -104,7 +120,7 @@
                 <section class="card news-card desktop-news">
                     <div class="card-title">
                         <span class="card-icon">📰</span>
-                        <span>MEDELLÍN NEWS</span>
+                        <span>LOCAL NEWS</span>
                     </div>
                     <div class="news-list" id="news-list-desktop"></div>
                 </section>
@@ -115,17 +131,17 @@
         <section class="card news-card mobile-news">
             <div class="card-title">
                 <span class="card-icon">📰</span>
-                <span>MEDELLÍN NEWS</span>
+                <span>LOCAL NEWS</span>
             </div>
             <div class="news-list" id="news-list-mobile"></div>
         </section>
 
         <footer class="footer">
-            <p>Weather for Medellín, Antioquia, Colombia</p>
+            <p id="footer-location">Weather for Medellín, Colombia</p>
             <p class="footer-credit">Open-Meteo · <a href="https://github.com/santiagorueda-lab">VaultGhost</a> ☢️</p>
         </footer>
     </div>
 
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=4"></script>
 </body>
 </html>

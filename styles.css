@@ -104,8 +104,70 @@ body {
     z-index: 1;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px 30px;
+    padding: 20px 20px 30px;
     min-height: 100vh;
+}
+
+/* City Tabs */
+.city-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 8px;
+    flex-wrap: wrap;
+}
+
+.city-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    min-width: 100px;
+}
+
+.city-tab:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.city-tab.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tab-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.tab-temp {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+@media (min-width: 768px) {
+    .city-tabs {
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .city-tab {
+        padding: 12px 28px;
+        min-width: 120px;
+    }
+    
+    .tab-name { font-size: 14px; }
+    .tab-temp { font-size: 20px; }
 }
 
 /* Main Header */
